@@ -64,8 +64,8 @@ if __name__ == "__main__":
     import numpy as np
 
     # 1 : Load mesh
-    file_path = "mesh/vis/038262402.obj"
-    file_path = "mesh/vis/nve7881601_0_2.obj"
+    file_path = "038262402.obj"
+    file_path = "nve7881601_0_2.obj"
 
     # 2 : Voxelise 3D model
     """
