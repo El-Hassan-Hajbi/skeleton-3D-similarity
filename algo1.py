@@ -87,6 +87,7 @@ if __name__ == "__main__":
     #print(AOF[10,18,10])
 
     voxels = numpyArrayGrid_to_VoxelGrid(AOF, voxelsGrid)
+    print(voxels)
     #print(voxels.get_voxels())
     o3d.visualization.draw_geometries([voxels])
 

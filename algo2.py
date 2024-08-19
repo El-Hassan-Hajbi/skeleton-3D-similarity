@@ -2,6 +2,7 @@
 
 """
 
+from EDT import central_difference_gradient, get_EDT
 import algo1
 def get_simple_points(voxel_grid):
     """
@@ -271,6 +272,7 @@ if __name__ == "__main__":
     
     idx=0
     SBP = []
+    JP = []
     for voxel in voxelsGrid.get_voxels():
         print(f"Processing voxel number {idx}")
         idx+=1
@@ -281,8 +283,8 @@ if __name__ == "__main__":
             SBP.append(voxel.grid_index)
             voxel_grid.add_voxel(new_voxel)
         if c_ == 1 and c_star == 1: # border (simple) points
-            new_voxel = o3d.geometry.Voxel(grid_index=voxel.grid_index, color=np.array([0, 0, 255]))
-            SBP.append(voxel.grid_index)
+            new_voxel = o3d.geometry.Voxel(grid_index=voxel.grid_index, color=np.array([255, 0, 0]))
+            #SBP.append(voxel.grid_index)
             voxel_grid.add_voxel(new_voxel)
 
         if c_ == 1 and c_star > 2\
@@ -291,21 +293,104 @@ if __name__ == "__main__":
             or c_ > 2 and c_star >= 2: # junction points
             new_voxel = o3d.geometry.Voxel(grid_index=voxel.grid_index, color=np.array([0, 255, 0]))
             voxel_grid.add_voxel(new_voxel)
+            JP.append(voxel.grid_index)
 
         if c_ == 1 and c_star == 2: # curve points
             new_voxel = o3d.geometry.Voxel(grid_index=voxel.grid_index, color=np.array([100, 100, 100]))
-            voxel_grid.add_voxel(new_voxel)
+            #voxel_grid.add_voxel(new_voxel)
         #else : 
         #    new_voxel = o3d.geometry.Voxel(grid_index=voxel.grid_index, color=np.array([0, 255, 0]))
         #    voxel_grid.add_voxel(new_voxel)
 
-    if len(voxel_grid.get_voxels()) > 0:
-        o3d.visualization.draw_geometries([voxel_grid])
-    else:
-        print("New voxel grid is empty.")
+    #if len(voxel_grid.get_voxels()) > 0:
+    #    o3d.visualization.draw_geometries([voxel_grid])
+    #else:
+    #    print("New voxel grid is empty.")
     #test()
-      
-    """for p in SBP: # contains all surface and border points
+        
+    def step1(Y):
+        
+        # Transform this set into vertices and adjacency matrix (the definition of adjacent depends on n)
+        adj={}
+        V = []
+        idx = 1
+        for y in Y:
+            V.append(Vertices(grid_idx=y, vertex=idx))
+            idx+=1
+        for v1 in V:
+            neighbors=[]
+            for v2 in V:
+                if Dinf(v1.grid_idx,v2.grid_idx)==1:
+                    neighbors.append(v2.vertex)
+            adj[v1.vertex]=neighbors
+        vertices = [v.vertex for v in V]
+        # Calculate the number of 26 connected components 
+        nbr_CC, Components = CC.find_connected_components(vertices, adj, return_CC=True)
+        return nbr_CC, Components 
+    nbr_CC, Components  = step1(SBP)
+    class Manifold():
+        def __init__(self, component) -> None:
+            self.voxels = component
+            self.neighbors = []
+        def add(self, manifold):
+            self.neighbors.append(manifold)
+
+    #for component in Components:
+    #    M = Manifold(component=component)
+    print(len(JP))
+    for junction_point in JP:
+        Y = SBP.copy()
+        Y.append(junction_point)
+        nbr_, Components  = step1(SBP)
+        if nbr_ < nbr_CC:
+            print(nbr_)
+        
+    # Flatten the list of lists into a single list
+    flattened_list = [item for sublist in Components for item in sublist]
+
+    # Use a set to find unique elements
+    unique_elements = set(flattened_list)
+    saliency=[len(Components[i])/len(unique_elements) for i in range(len(Components))]
+    print(saliency)
+
+    class Node():
+        def __init__(self, value : float, children : list):
+            self.child = children
+            self.value = value
+
+    class Manifold():
+        def __init__(self, index : int, saliency : float, neighbors : list[int]):
+            self.value = saliency
+            self.index = index
+            self.neighbors = neighbors 
+
+    
+
+
+
+    """
+    import heapq
+
+    D = get_EDT(occupancy)
+
+    # 3.b : Gradient of EDT
+    gradD = central_difference_gradient(D)
+    #print(gradD)
+
+    # 4 : Average Outward Flux Map
+    AOF = algo1.get_AOF(occupancy, gradD)
+    def insert(x, max_heap):
+        heapq.heappush(max_heap, (AOF(x), x))
+
+    def create_max_heap():
+        return []
+
+    # Example usage
+    max_heap = create_max_heap()
+    for voxel_idx in BP:
+
+
+    for p in SBP: # contains all surface and border points
         neighbors=[]
         for v in SBP:
             if Dinf(p,v)==1:

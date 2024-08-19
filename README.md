@@ -3,10 +3,13 @@ Implementation of 3D similarity based on skeleton and graph representation from 
 
 
 # Tasks 
-- [x] Voxelized 3D model.
 - [x] Find 26-neighborhood of a given point and visualise it. Evaluate its complexity.
 - [x] For a given set of discrete voxels, calculate the number of its connected components (adjacent = 26-neighbors for example). Evaluate its complexity.
 - [x] Calculate C*, and visualise all surface points. Evaluate its complexity.
+- [ ] Medial surface (3D skeleton using topology preserving thining algorithm).
+- [ ] Using Topological Segmentation of Discrete Surfaces, group manifolds to segment the medial surface.
+- [ ] Transform the segmented MS into a DAG (Directed Acyclic Graph).
+- [ ] Create a graph database from CAD dataset.
 
 # Voxelized 3D model
 

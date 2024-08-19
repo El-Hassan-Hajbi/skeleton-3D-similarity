@@ -1,42 +1,45 @@
-def find_connected_components(V, Adj):
-  """
-  Finds the number of connected components in an undirected graph.
+def find_connected_components(V, Adj, return_CC=False):
+    """
+    Finds the number of connected components in an undirected graph.
 
-  Args:
-    V: A set of vertices.
-    Adj: An adjacency list representation of the graph.
+    Args:
+        V: A set of vertices.
+        Adj: An adjacency list representation of the graph.
 
-  Returns:
-    The number of connected components.
-  """
+    Returns:
+        The number of connected components.
+    """
 
-  visited = {}
-  component_count = 0
+    visited = {}
+    component_count = 0
 
-  for v in V:
-    visited[v] = False
+    for v in V:
+        visited[v] = False
+    CC=[]
+    for v in V:
+        if not visited[v]:
+            Component=[]
+            dfs(v, Adj, visited, Component)
+            CC.append(Component)
+            component_count += 1
 
-  for v in V:
-    if not visited[v]:
-      dfs(v, Adj, visited)
-      component_count += 1
+    if return_CC : return component_count, CC
+    else : return component_count
 
-  return component_count
+def dfs(v, Adj, visited, Component):
+    """
+    Performs depth-first search from vertex v.
 
-def dfs(v, Adj, visited):
-  """
-  Performs depth-first search from vertex v.
-
-  Args:
-    v: The starting vertex.
-    Adj: An adjacency list representation of the graph.
-    visited: A dictionary to track visited vertices.
-  """
-
-  visited[v] = True
-  for neighbor in Adj[v]:
-    if not visited[neighbor]:
-      dfs(neighbor, Adj, visited)
+    Args:
+        v: The starting vertex.
+        Adj: An adjacency list representation of the graph.
+        visited: A dictionary to track visited vertices.
+    """
+    visited[v] = True
+    Component.append(v)
+    for neighbor in Adj[v]:
+        if not visited[neighbor]:
+            dfs(neighbor, Adj, visited, Component)
 
 
 import unittest
@@ -81,7 +84,8 @@ class TestFindConnectedComponents(unittest.TestCase):
                 11: [10],
                 12: [10],
                 }
-        result = find_connected_components(V, Adj)
+        result, CC = find_connected_components(V, Adj, return_CC=True)
+        print(CC)
         self.assertEqual(result, 3)
 
 
